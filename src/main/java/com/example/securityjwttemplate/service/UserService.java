@@ -47,7 +47,7 @@ public class UserService {
 
         User createdUser = repository.save(user);
 
-        RegisterResponse response = new RegisterResponse(createdUser.getId(), createdUser.getUsername(), request.password());
+        RegisterResponse response = new RegisterResponse(createdUser.getId(), createdUser.getUsername());
         return response;
     }
 
