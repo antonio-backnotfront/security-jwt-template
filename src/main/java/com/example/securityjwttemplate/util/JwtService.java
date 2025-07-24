@@ -19,17 +19,8 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+    @Value("${jwt.secret}")
     private String secret;
-
-    public JwtService(){
-        try {
-            KeyGenerator keyGenerator = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey secretKey = keyGenerator.generateKey();
-            secret = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-        } catch (NoSuchAlgorithmException e){
-            throw new RuntimeException(e);
-        }
-    }
 
     public SecretKey getKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secret);
