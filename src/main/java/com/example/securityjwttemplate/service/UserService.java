@@ -4,6 +4,7 @@ import com.example.securityjwttemplate.dto.request.LoginRequest;
 import com.example.securityjwttemplate.dto.request.RegisterRequest;
 import com.example.securityjwttemplate.dto.response.LoginResponse;
 import com.example.securityjwttemplate.dto.response.RegisterResponse;
+import com.example.securityjwttemplate.exception.BadRequestException;
 import com.example.securityjwttemplate.model.Role;
 import com.example.securityjwttemplate.model.User;
 import com.example.securityjwttemplate.model.UserPrincipal;
@@ -17,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -49,14 +52,13 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest request){
-        User user = new User();
-        user.setUsername(request.login());
-        user.setPassword(encoder.encode(request.password()));
-        user.setRole(roleService.getRoleByName("ROLE_USER"));
+        Optional<User> user = repository.findByUsername(request.login());
+        if (!user.isPresent())
+            throw new BadRequestException(String.format("User with login '%s' not found.", request.login()));
 
         try {
-            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), request.password()));
-            UserPrincipal userPrincipal = new UserPrincipal(user);
+            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.get().getUsername(), request.password()));
+            UserPrincipal userPrincipal = new UserPrincipal(user.get());
             String jwt = jwtService.generateToken(userPrincipal);
             LoginResponse response = new LoginResponse(jwt);
             return response;
