@@ -1,6 +1,9 @@
 package com.example.securityjwttemplate.handler;
 
+import com.example.securityjwttemplate.dto.response.ErrorResponse;
 import com.example.securityjwttemplate.exception.ApplicationException;
+import com.example.securityjwttemplate.util.ErrorResponseFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -8,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,22 +20,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<?> handleException(ApplicationException exception) {
-        Map<String, Object> body = createBody(exception.getStatusCode(), exception.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.valueOf(exception.getStatusCode()));
+        ErrorResponse errorResponse = ErrorResponseFactory.create(exception.getStatusCode(), exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.valueOf(exception.getStatusCode()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception exception) {
         logger.error(Arrays.toString(exception.getStackTrace()));
-        Map<String, Object> body = createBody(500, "Internal Server Error.");
-        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        ErrorResponse errorResponse = ErrorResponseFactory.create(500, "Internal Server Error.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private Map<String, Object> createBody(int statusCode, String errorMessage) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", statusCode);
-        body.put("error", errorMessage);
-        return body;
-    }
 }
