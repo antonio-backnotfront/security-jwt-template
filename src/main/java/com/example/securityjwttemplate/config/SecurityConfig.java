@@ -1,7 +1,6 @@
 package com.example.securityjwttemplate.config;
 
 import com.example.securityjwttemplate.filter.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,9 +10,9 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -21,11 +20,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtFilter;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtFilter;
+    public SecurityConfig(
+            UserDetailsService userDetailsService,
+            JwtAuthenticationFilter jwtFilter,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.userDetailsService = userDetailsService;
+        this.jwtFilter = jwtFilter;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -57,6 +64,15 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                /*
+                 * .addFilter(Filter filter, Class<Filter> anotherFilter)
+                 *   - register filter at the same spot
+                 * .addFilterBefore(Filter filter, Class<Filter> anotherFilter)
+                 *   - register custom filter before the other specified one
+                 * .addFilterAfter(Filter filter, Class<Filter> anotherFilter)
+                 *   - register filters after the specified one
+                 */
+
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -67,9 +83,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
 }

@@ -214,3 +214,4 @@ Temporary Items
 gradle.properties
 .jpb
 .gitattributes
+/src/main/java/com/example/securityjwttemplate/controller/TestController.java
