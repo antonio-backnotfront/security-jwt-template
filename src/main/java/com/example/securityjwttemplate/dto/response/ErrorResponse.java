@@ -2,7 +2,7 @@ package com.example.securityjwttemplate.dto.response;
 
 public class ErrorResponse {
     private int status;
-    private String error;
+    private Object error;
     private long timestamp;
 
     public int getStatus() {
@@ -13,11 +13,11 @@ public class ErrorResponse {
         this.status = status;
     }
 
-    public String getError() {
+    public Object getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(Object error) {
         this.error = error;
     }
 
@@ -29,7 +29,7 @@ public class ErrorResponse {
         this.timestamp = timestamp;
     }
 
-    public ErrorResponse(int status, String error, long timestamp) {
+    public ErrorResponse(int status, Object error, long timestamp) {
         this.status = status;
         this.error = error;
         this.timestamp = timestamp;
