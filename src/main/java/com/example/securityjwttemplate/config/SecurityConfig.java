@@ -1,6 +1,9 @@
 package com.example.securityjwttemplate.config;
 
 import com.example.securityjwttemplate.filter.JwtAuthenticationFilter;
+import com.example.securityjwttemplate.handler.JwtAccessDeniedHandler;
+import com.example.securityjwttemplate.handler.JwtAuthenticationEntryPoint;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,16 +25,20 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtFilter;
-    private final PasswordEncoder passwordEncoder;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
+    // injected as internal config bean
+    private PasswordEncoder passwordEncoder;
 
     public SecurityConfig(
             UserDetailsService userDetailsService,
             JwtAuthenticationFilter jwtFilter,
-            PasswordEncoder passwordEncoder
-    ) {
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler) {
         this.userDetailsService = userDetailsService;
         this.jwtFilter = jwtFilter;
-        this.passwordEncoder = passwordEncoder;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
     }
 
     @Bean
@@ -72,8 +79,13 @@ public class SecurityConfig {
                  * .addFilterAfter(Filter filter, Class<Filter> anotherFilter)
                  *   - register filters after the specified one
                  */
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(e -> e
+                        // authenticationEntryPoint - handles invalid/missing JWT
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        // authenticationEntryPoint - handles improper access role
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
                 .build();
     }
 
@@ -88,9 +100,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(PasswordEncoder pe) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
+        provider.setPasswordEncoder(pe);
         return provider;
     }
 }

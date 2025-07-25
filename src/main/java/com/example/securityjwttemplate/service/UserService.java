@@ -4,7 +4,7 @@ import com.example.securityjwttemplate.dto.request.LoginRequest;
 import com.example.securityjwttemplate.dto.request.RegisterRequest;
 import com.example.securityjwttemplate.dto.response.LoginResponse;
 import com.example.securityjwttemplate.dto.response.RegisterResponse;
-import com.example.securityjwttemplate.exception.BadRequestException;
+import com.example.securityjwttemplate.exception.UnauthorizedException;
 import com.example.securityjwttemplate.model.Role;
 import com.example.securityjwttemplate.model.User;
 import com.example.securityjwttemplate.model.UserPrincipal;
@@ -15,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +36,13 @@ public class UserService {
     private AuthenticationManager authManager;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final String ERROR_MESSAGE = "Unauthorized: login or password is invalid.";
 
-    public RegisterResponse register(RegisterRequest request){
+    public RegisterResponse register(RegisterRequest request) {
         User user = new User();
         user.setUsername(request.login());
         user.setPassword(encoder.encode(request.password()));
-        Role userRole =  roleService.getRoleByName("ROLE_USER");
+        Role userRole = roleService.getRoleByName("ROLE_USER");
         user.setRole(userRole);
 
         User createdUser = repository.save(user);
@@ -51,21 +51,26 @@ public class UserService {
         return response;
     }
 
-    public LoginResponse login(LoginRequest request){
+    public LoginResponse login(LoginRequest request) {
         Optional<User> user = repository.findByUsername(request.login());
         if (!user.isPresent())
-            throw new BadRequestException(String.format("User with login '%s' not found.", request.login()));
+            throw new UnauthorizedException(ERROR_MESSAGE);
 
         try {
-            Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(user.get().getUsername(), request.password()));
+            Authentication authentication =
+                    authManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    user.get().getUsername(),
+                                    request.password()
+                            )
+                    );
             UserPrincipal userPrincipal = new UserPrincipal(user.get());
             String jwt = jwtService.generateToken(userPrincipal);
             LoginResponse response = new LoginResponse(jwt);
             return response;
-        } catch (BadCredentialsException e){
-            throw e;
+        } catch (BadCredentialsException e) {
+            throw new UnauthorizedException(ERROR_MESSAGE);
         }
-
 
     }
 
