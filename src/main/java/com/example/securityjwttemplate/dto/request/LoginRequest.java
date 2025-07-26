@@ -1,3 +1,8 @@
 package com.example.securityjwttemplate.dto.request;
 
-public record LoginRequest(String login, String password){}
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginRequest(
+        @NotBlank String login,
+        @NotBlank String password
+){}
