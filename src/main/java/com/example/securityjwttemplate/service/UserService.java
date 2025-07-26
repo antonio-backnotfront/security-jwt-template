@@ -10,12 +10,11 @@ import com.example.securityjwttemplate.model.User;
 import com.example.securityjwttemplate.model.UserPrincipal;
 import com.example.securityjwttemplate.repository.UserRepository;
 import com.example.securityjwttemplate.util.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,20 +22,21 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private JwtService jwtService;
+    private final JwtService jwtService;
+    private final RoleService roleService;
+    private final UserRepository repository;
+    private final AuthenticationManager authManager;
+    private final PasswordEncoder encoder;
 
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private UserRepository repository;
-
-    @Autowired
-    private AuthenticationManager authManager;
-
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private final String ERROR_MESSAGE = "Unauthorized: login or password is invalid.";
+
+    public UserService(JwtService jwtService, RoleService roleService, UserRepository repository, AuthenticationManager authManager, PasswordEncoder encoder) {
+        this.jwtService = jwtService;
+        this.roleService = roleService;
+        this.repository = repository;
+        this.authManager = authManager;
+        this.encoder = encoder;
+    }
 
     public RegisterResponse register(RegisterRequest request) {
         User user = new User();

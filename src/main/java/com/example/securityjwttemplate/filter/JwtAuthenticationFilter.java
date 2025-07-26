@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,11 +23,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    @Autowired
-    JwtService jwtService;
+    private final JwtService jwtService;
+    private final MyUserDetailsService myUserDetailsService;
 
-    @Autowired
-    MyUserDetailsService myUserDetailsService;
+    public JwtAuthenticationFilter(JwtService jwtService, MyUserDetailsService myUserDetailsService) {
+        this.jwtService = jwtService;
+        this.myUserDetailsService = myUserDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -44,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             try {
                 username = jwtService.extractUsername(token);
-            } catch (JwtException e){
+            } catch (JwtException e) {
                 logger.warn("Failed to parse jwt: {}", e.getMessage());
             }
         }
