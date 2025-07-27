@@ -215,3 +215,9 @@ gradle.properties
 .jpb
 .gitattributes
 /src/main/java/com/example/securityjwttemplate/controller/TestController.java
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging

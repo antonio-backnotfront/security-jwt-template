@@ -1,0 +1,40 @@
+# Build artifacts
+build/
+target/
+*.jar
+*.war
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+.dockerignore
+compose.yml
+
+# Environment and config files
+.env
+*.env
+
+# Logs
+logs/
+*.log
+
+# Documentation
+README.md
+HELP.md
+
+# Gradle cache (but keep wrapper)
+.gradle/
