@@ -63,7 +63,9 @@ public class SecurityConfig {
                  * hasAnyRole("A", "B") - allow any role in the list
                  */
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/info").permitAll()
                         .anyRequest().authenticated()
                 )
                 /*

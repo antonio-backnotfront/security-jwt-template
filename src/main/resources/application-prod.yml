@@ -3,10 +3,36 @@ spring:
     database: mysql
     hibernate:
       ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
   datasource:
-    url: ${MYSQL_URL}
+    url: ${MYSQL_URL}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 60000
+      max-lifetime: 1800000
+      initialization-fail-timeout: 60000
+      connection-test-query: SELECT 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
 
 application:
   security:
