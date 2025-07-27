@@ -16,9 +16,9 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+    private final Logger logger = LoggerFactory.getLogger(JwtService.class);
     @Value("${jwt.secret}")
     private String secret;
-    private final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     public SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);

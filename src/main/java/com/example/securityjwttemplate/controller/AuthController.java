@@ -6,7 +6,6 @@ import com.example.securityjwttemplate.dto.response.LoginResponse;
 import com.example.securityjwttemplate.dto.response.RegisterResponse;
 import com.example.securityjwttemplate.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
