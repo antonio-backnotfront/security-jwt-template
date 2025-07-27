@@ -3,17 +3,21 @@ package com.example.securityjwttemplate.service;
 import com.example.securityjwttemplate.dto.request.LoginRequest;
 import com.example.securityjwttemplate.dto.request.RegisterRequest;
 import com.example.securityjwttemplate.dto.response.LoginResponse;
+import com.example.securityjwttemplate.dto.response.RefreshResponse;
 import com.example.securityjwttemplate.dto.response.RegisterResponse;
 import com.example.securityjwttemplate.exception.UnauthorizedException;
 import com.example.securityjwttemplate.model.Role;
 import com.example.securityjwttemplate.model.User;
 import com.example.securityjwttemplate.model.UserPrincipal;
+import com.example.securityjwttemplate.model.enums.TokenType;
 import com.example.securityjwttemplate.repository.UserRepository;
 import com.example.securityjwttemplate.util.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,8 +69,9 @@ public class UserService {
                             )
                     );
             UserPrincipal userPrincipal = new UserPrincipal(user.get());
-            String jwt = jwtService.generateToken(userPrincipal);
-            LoginResponse response = new LoginResponse(jwt);
+            String accessToken = jwtService.generateAccessToken(userPrincipal);
+            String refreshToken = jwtService.generateRefreshToken(userPrincipal);
+            LoginResponse response = new LoginResponse(accessToken, refreshToken);
             return response;
         } catch (BadCredentialsException e) {
             throw new UnauthorizedException(ERROR_MESSAGE);
@@ -74,4 +79,20 @@ public class UserService {
 
     }
 
+    public RefreshResponse refresh(HttpServletRequest httpRequest) {
+        String authHeader = httpRequest.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            TokenType tokenType = jwtService.extractTokenType(token);
+            if (tokenType != null && tokenType.equals(TokenType.REFRESH)) {
+                UserDetails userDetails = jwtService.extractUserDetails(token);
+                if (jwtService.isTokenValid(token, userDetails)) {
+                    String accessToken = jwtService.generateAccessToken(userDetails);
+                    RefreshResponse response = new RefreshResponse(accessToken);
+                    return response;
+                }
+            }
+        }
+        throw new UnauthorizedException("Unauthorized: valid refresh token is required.");
+    }
 }

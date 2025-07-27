@@ -24,7 +24,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json");
 
-        ErrorResponse errorResponse = ErrorResponseFactory.create(403, "Access denied.");
+        ErrorResponse errorResponse = ErrorResponseFactory.create(403, "Forbidden: access denied.");
         String json = new ObjectMapper().writeValueAsString(errorResponse);
         response.getWriter().write(json);
     }

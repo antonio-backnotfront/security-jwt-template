@@ -34,6 +34,10 @@ public class User {
         return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -42,10 +46,6 @@ public class User {
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 '}';
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public Long getId() {

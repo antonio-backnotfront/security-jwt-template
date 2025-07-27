@@ -5,6 +5,12 @@ public class ErrorResponse {
     private Object error;
     private long timestamp;
 
+    public ErrorResponse(int status, Object error, long timestamp) {
+        this.status = status;
+        this.error = error;
+        this.timestamp = timestamp;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -26,12 +32,6 @@ public class ErrorResponse {
     }
 
     public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public ErrorResponse(int status, Object error, long timestamp) {
-        this.status = status;
-        this.error = error;
         this.timestamp = timestamp;
     }
 }

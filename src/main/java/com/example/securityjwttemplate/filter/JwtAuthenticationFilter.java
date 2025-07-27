@@ -1,8 +1,9 @@
 package com.example.securityjwttemplate.filter;
 
+import com.example.securityjwttemplate.exception.UnauthorizedException;
+import com.example.securityjwttemplate.model.enums.TokenType;
 import com.example.securityjwttemplate.service.MyUserDetailsService;
 import com.example.securityjwttemplate.util.JwtService;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,19 +40,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String username = null;
+//        String username = null;
+        TokenType tokenType = null;
+        UserDetails userDetails = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                username = jwtService.extractUsername(token);
-            } catch (JwtException e) {
+                userDetails = jwtService.extractUserDetails(token);
+                tokenType = jwtService.extractTokenType(token);
+//                username = jwtService.extractUsername(token);
+            } catch (UnauthorizedException e) {
                 logger.warn("Failed to parse jwt: {}", e.getMessage());
             }
         }
+        System.out.println(tokenType);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
+        if (SecurityContextHolder.getContext().getAuthentication() == null && tokenType != null && tokenType.equals(TokenType.ACCESS)) {
+
 
             if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
