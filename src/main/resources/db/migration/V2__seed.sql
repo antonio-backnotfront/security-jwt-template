@@ -1,5 +1,5 @@
-INSERT INTO role (name) values ('user');
-INSERT INTO role (name) values ('admin');
+INSERT INTO role (name) values ('ROLE_USER');
+INSERT INTO role (name) values ('ROLE_ADMIN');
 
 # my_password11
 INSERT INTO user (username, password, role_id) values ('User A', '$2a$12$0FNkvUZ3SYRVPg.ue.AWReOfiw4vlVpAnVEQq8lnCaP26pNAHoy42', 1);
