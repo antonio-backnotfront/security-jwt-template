@@ -23,8 +23,9 @@ libraries and approaches to securing application.
 ---
 
 <p align="center">
-  <a href="#-how-to-use" style="padding-right: 12px;"><strong>How to use</strong></a> •
-  <a href="#-technologies-used" style="padding-right: 12px;"><strong>Technologies used</strong></a>
+  <a href="#-technologies-used" ><strong>Technologies used</strong></a> •
+  <a href="#-demo" ><strong>Demo</strong></a> •
+  <a href="#-how-to-use" ><strong>How to use</strong></a> 
 </p>
 
 ---
@@ -38,6 +39,11 @@ Flyway — data migration tool.
 JJWT — jwt encoding and decoding.  
 Gradle — build automation tool.  
 Docker & Docker Compose — containerization and orchestration of Spring Boot app and MySQL instance.
+
+---
+
+## Demo
+![demo usage](https://github.com/user-attachments/assets/b85f2f7b-6239-46e0-bdb1-a78d228e1d32)
 
 ## How to use
 
