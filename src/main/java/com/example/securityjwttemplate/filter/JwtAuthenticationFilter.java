@@ -40,7 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String token = null;
-//        String username = null;
         TokenType tokenType = null;
         UserDetails userDetails = null;
 
@@ -49,12 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 userDetails = jwtService.extractUserDetails(token);
                 tokenType = jwtService.extractTokenType(token);
-//                username = jwtService.extractUsername(token);
             } catch (UnauthorizedException e) {
                 logger.warn("Failed to parse jwt: {}", e.getMessage());
             }
         }
-        System.out.println(tokenType);
 
         if (SecurityContextHolder.getContext().getAuthentication() == null && tokenType != null && tokenType.equals(TokenType.ACCESS)) {
 
