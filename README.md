@@ -43,7 +43,7 @@ Docker & Docker Compose — containerization and orchestration of Spring Boot ap
 ---
 
 ## Demo
-![demo usage](https://github.com/user-attachments/assets/b85f2f7b-6239-46e0-bdb1-a78d228e1d32)
+![Image](https://github.com/user-attachments/assets/d96105f4-4fcb-4968-a1b4-7a7af31acf4a)
 
 ## How to use
 
